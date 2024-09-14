@@ -37,6 +37,8 @@ func SubscribeToEvent(c *gin.Context) {
 func GetEvents(c *gin.Context) {
 	userRole := c.GetHeader("role") //simulacion
 	titleFilter := c.Query("title")
+	statusFilter := c.Query("status")
+	dateFilter := c.Query("date")
 
 	events := service.GetAllEvents()
 	var filteredEvents []model.Event
@@ -48,6 +50,15 @@ func GetEvents(c *gin.Context) {
 		if titleFilter != "" && !utils.containsIgnoreCase(event.Title, titleFilter) {
 			continue
 		}
+
+		if statusFilter != "" && !utils.matchesStatus(event.Status, statusFilter) {
+			continue
+		}
+
+		if dateFilter != "" && !utils.matchesDate(event.DateTime, dateFilter) {
+			continue
+		}
+
 		filteredEvents = append(filteredEvents, event)
 	}
 	c.JSON(http.StatusOK, filteredEvents)
