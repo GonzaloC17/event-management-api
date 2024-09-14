@@ -1,14 +1,28 @@
 package main
 
 import (
-	"github.com/GonzaloC17/even-management-api/internal/handler"
+	"github.com/GonzaloC17/event-management-api/internal/handler"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	router := gin.Default()
+	r := gin.Default()
 
-	router.GET("/events", handler.GetEvents)
-	router.POST("/events", handler.CreateEvents)
-	router.Run(":8080")
+	eventRoutes := r.Group("/events")
+	{
+		eventRoutes.GET("/", handler.GetEvents)
+
+		eventRoutes.POST("/", handler.CreateEvent)
+
+		eventRoutes.POST("/:id/subscribe", handler.SubscribeToEvent)
+
+		eventRoutes.GET("/active", handler.GetActiveEvents)
+
+		eventRoutes.GET("/completed", handler.GetCompletedEvents)
+
+		eventRoutes.PUT("/:id", handler.UpdateEvent)
+
+		eventRoutes.DELETE("/:id", handler.DeteleEvent)
+	}
+	r.Run(":8080")
 }
