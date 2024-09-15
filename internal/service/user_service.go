@@ -1,13 +1,35 @@
 package service
 
-import "github.com/GonzaloC17/event-management-api/internal/model"
+import (
+	"errors"
 
-var (
-	users = make(map[string]model.User)
+	"github.com/GonzaloC17/event-management-api/internal/model"
 )
 
-/*func CreateUser(user model.User) error{
-	if _, exists := users[user.ID]; exists{
-		return errors.New()
+var (
+	userStore = make(map[int]model.User)
+)
+
+func CreateUser(user model.User) error {
+	if _, exists := userStore[user.ID]; exists {
+		return errors.New("user already exists")
 	}
-}*/
+	userStore[user.ID] = user
+	return nil
+}
+
+func GetUser(userID int) (model.User, error) {
+	user, exists := userStore[userID]
+	if !exists {
+		return model.User{}, errors.New("user not found")
+	}
+	return user, nil
+}
+
+func GetAllUsers() []model.User {
+	var userList []model.User
+	for _, user := range userStore {
+		userList = append(userList, user)
+	}
+	return userList
+}

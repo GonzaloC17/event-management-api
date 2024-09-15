@@ -1,9 +1,11 @@
 package utils
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
 type ErrorResponse struct {
-	Error string `json: "error"`
+	Error string `json:"error"`
 }
 
 func SendError(c *gin.Context, statusCode int, message string) {

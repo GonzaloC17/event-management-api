@@ -12,7 +12,7 @@ func ContainsIgnoreCase(str, substr string) bool {
 }
 
 func MatchesStatus(eventStatus model.EventStatus, filterStatus string) bool {
-	return strings.ToLower(string(eventStatus)) == strings.ToLower(filterStatus)
+	return strings.EqualFold(string(eventStatus), filterStatus)
 }
 
 func MatchesDate(eventDate time.Time, filterDate string) bool {

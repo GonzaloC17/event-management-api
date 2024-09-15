@@ -36,10 +36,10 @@ func GetAllEvents() []model.Event {
 
 func CreateEvent(event model.Event) error {
 	if event.Title == "" {
-		return errors.New("Title cannot be empty")
+		return errors.New("title cannot be empty")
 	}
 	if event.DateTime.Before(time.Now()) {
-		return errors.New("Event date must be in the future")
+		return errors.New("event date must be in the future")
 	}
 	event.ID = idCounter
 	idCounter++
@@ -53,7 +53,7 @@ func GetEventByID(id int) (model.Event, error) {
 			return event, nil
 		}
 	}
-	return model.Event{}, errors.New("Event not found")
+	return model.Event{}, errors.New("event not found")
 }
 
 func UpdateEvent(updatedEvent model.Event) (model.Event, error) {
@@ -63,7 +63,7 @@ func UpdateEvent(updatedEvent model.Event) (model.Event, error) {
 			return updatedEvent, nil
 		}
 	}
-	return model.Event{}, errors.New("Event not found")
+	return model.Event{}, errors.New("event not found")
 }
 
 func DeleteEvent(id int) error {
@@ -73,5 +73,5 @@ func DeleteEvent(id int) error {
 			return nil
 		}
 	}
-	return errors.New("Event not found")
+	return errors.New("event not found")
 }

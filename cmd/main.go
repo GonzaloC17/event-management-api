@@ -24,5 +24,14 @@ func main() {
 
 		eventRoutes.DELETE("/:id", handler.DeteleEvent)
 	}
+
+	userRoutes := r.Group("/users")
+	{
+		userRoutes.POST("/", handler.CreateUser)
+
+		userRoutes.GET("/", handler.GetAllUsers)
+
+		userRoutes.GET("/:id", handler.GetUserByID)
+	}
 	r.Run(":8080")
 }
