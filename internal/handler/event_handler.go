@@ -7,23 +7,24 @@ import (
 
 	"github.com/GonzaloC17/event-management-api/internal/model"
 	"github.com/GonzaloC17/event-management-api/internal/service"
+	"github.com/GonzaloC17/event-management-api/internal/utils"
 	"github.com/gin-gonic/gin"
 )
 
 func SubscribeToEvent(c *gin.Context) {
 	eventID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid event ID"})
+		utils.SendError(c, http.StatusBadRequest, "Invalid event ID")
 		return
 	}
 	event, err := service.GetEventByID(eventID)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Event ID not found"})
+		utils.SendError(c, http.StatusNotFound, "Event ID not found")
 		return
 	}
 
 	if event.Status != model.Published || event.DateTime.Before(time.Now()) {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Cannot subscribe to this event"})
+		utils.SendError(c, http.StatusForbidden, "Cannot subscribe to this event")
 		return
 	}
 
@@ -47,15 +48,15 @@ func GetEvents(c *gin.Context) {
 			continue
 		}
 
-		if titleFilter != "" && !utils.containsIgnoreCase(event.Title, titleFilter) {
+		if titleFilter != "" && !utils.ContainsIgnoreCase(event.Title, titleFilter) {
 			continue
 		}
 
-		if statusFilter != "" && !utils.matchesStatus(event.Status, statusFilter) {
+		if statusFilter != "" && !utils.MatchesStatus(event.Status, statusFilter) {
 			continue
 		}
 
-		if dateFilter != "" && !utils.matchesDate(event.DateTime, dateFilter) {
+		if dateFilter != "" && !utils.MatchesDate(event.DateTime, dateFilter) {
 			continue
 		}
 
@@ -75,49 +76,52 @@ func GetCompletedEvents(c *gin.Context) {
 }
 
 func CreateEvent(c *gin.Context) {
-	var event model.Event
-	if err := c.ShouldBindJSON(&event); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	var newEvent model.Event
+	if err := c.ShouldBindJSON(&newEvent); err != nil {
+		utils.SendError(c, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
 
-	if event.DateTime.Before(time.Now()) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Event date must be in the future"})
-		return
+	if newEvent.Title == "" {
+		utils.SendError(c, http.StatusBadRequest, "Title is required")
 	}
 
-	newEvent := service.CreateEvent(event)
+	err := service.CreateEvent(newEvent)
+	if err != nil {
+		utils.SendError(c, http.StatusInternalServerError, "Failed to create event")
+	}
+
 	c.JSON(http.StatusCreated, newEvent)
 }
 
 func UpdateEvent(c *gin.Context) {
 	userRole := c.GetHeader("role") //simulacion
 	if userRole != "admin" {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Only admins can update events"})
+		utils.SendError(c, http.StatusForbidden, "Only admins can update events")
 		return
 	}
 
 	eventID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid event ID"})
+		utils.SendError(c, http.StatusBadRequest, "Invalid event ID")
 		return
 	}
 
 	var updatedEvent model.Event
 	if err := c.ShouldBindJSON(&updatedEvent); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		utils.SendError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	if updatedEvent.DateTime.Before(time.Now()) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Event date must be in the future"})
+		utils.SendError(c, http.StatusBadRequest, "Event date must be in the future")
 		return
 	}
 
 	updatedEvent.ID = eventID
 	updatedEvent, err = service.UpdateEvent(updatedEvent)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Event not found"})
+		utils.SendError(c, http.StatusNotFound, "Event not found")
 		return
 	}
 
@@ -127,19 +131,19 @@ func UpdateEvent(c *gin.Context) {
 func DeteleEvent(c *gin.Context) {
 	userRole := c.GetHeader("role") //simulacion
 	if userRole != "admin" {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Only admmins can delete events"})
+		utils.SendError(c, http.StatusForbidden, "Only admins can delete events")
 		return
 	}
 
 	eventID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid event ID"})
+		utils.SendError(c, http.StatusBadRequest, "Invalid event ID")
 		return
 	}
 
 	err = service.DeleteEvent(eventID)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Event not found"})
+		utils.SendError(c, http.StatusNotFound, "Event not found")
 		return
 	}
 

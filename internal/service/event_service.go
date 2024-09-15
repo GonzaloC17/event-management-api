@@ -34,11 +34,17 @@ func GetAllEvents() []model.Event {
 	return events
 }
 
-func CreateEvent(event model.Event) model.Event {
+func CreateEvent(event model.Event) error {
+	if event.Title == "" {
+		return errors.New("Title cannot be empty")
+	}
+	if event.DateTime.Before(time.Now()) {
+		return errors.New("Event date must be in the future")
+	}
 	event.ID = idCounter
 	idCounter++
 	events = append(events, event)
-	return event
+	return nil
 }
 
 func GetEventByID(id int) (model.Event, error) {

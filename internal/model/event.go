@@ -4,11 +4,6 @@ import "time"
 
 type EventStatus string
 
-const (
-	Draft     EventStatus = "draft"
-	Published EventStatus = "published"
-)
-
 type Event struct {
 	ID          int         `json:"id"`
 	Title       string      `json:"title"`
