@@ -22,7 +22,7 @@ func main() {
 
 		eventRoutes.PUT("/:eventID", handler.UpdateEvent)
 
-		eventRoutes.DELETE("/:eventID", handler.DeteleEvent)
+		eventRoutes.DELETE("/:eventID", handler.DeleteEvent)
 	}
 
 	userRoutes := r.Group("/users")

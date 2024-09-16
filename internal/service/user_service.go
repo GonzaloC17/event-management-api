@@ -1,35 +1,26 @@
 package service
 
 import (
-	"errors"
-
 	"github.com/GonzaloC17/event-management-api/internal/model"
+	"github.com/GonzaloC17/event-management-api/internal/repository"
 )
 
-var (
-	userStore = make(map[int]model.User)
-)
-
-func CreateUser(user model.User) error {
-	if _, exists := userStore[user.ID]; exists {
-		return errors.New("user already exists")
-	}
-	userStore[user.ID] = user
-	return nil
+type UserService struct {
+	repo repository.UserRepository
 }
 
-func GetUser(userID int) (model.User, error) {
-	user, exists := userStore[userID]
-	if !exists {
-		return model.User{}, errors.New("user not found")
-	}
-	return user, nil
+func NewUserService(repo repository.UserRepository) *UserService {
+	return &UserService{repo: repo}
 }
 
-func GetAllUsers() []model.User {
-	var userList []model.User
-	for _, user := range userStore {
-		userList = append(userList, user)
-	}
-	return userList
+func (s *UserService) CreateUser(user model.User) error {
+	return s.repo.Create(user)
+}
+
+func (s *UserService) GetUser(userID int) (model.User, error) {
+	return s.repo.GetByID(userID)
+}
+
+func (s *UserService) GetAllUsers() []model.User {
+	return s.repo.GetAll()
 }

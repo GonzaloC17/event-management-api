@@ -6,10 +6,14 @@ import (
 	"time"
 
 	"github.com/GonzaloC17/event-management-api/internal/model"
+	"github.com/GonzaloC17/event-management-api/internal/repository"
 	"github.com/GonzaloC17/event-management-api/internal/service"
 	"github.com/GonzaloC17/event-management-api/internal/utils"
 	"github.com/gin-gonic/gin"
 )
+
+var eventRepo = repository.NewInMemoryEventRepository()
+var eventService = service.NewEventService(eventRepo)
 
 func SubscribeToEvent(c *gin.Context) {
 	eventID, err := strconv.Atoi(c.Param("eventID"))
@@ -17,7 +21,7 @@ func SubscribeToEvent(c *gin.Context) {
 		utils.SendError(c, http.StatusBadRequest, "Invalid event ID")
 		return
 	}
-	event, err := service.GetEventByID(eventID)
+	event, err := eventService.GetEventByID(eventID)
 	if err != nil {
 		utils.SendError(c, http.StatusNotFound, "Event ID not found")
 		return
@@ -28,19 +32,24 @@ func SubscribeToEvent(c *gin.Context) {
 		return
 	}
 
+	// Simulación
 	userEmail := c.GetHeader("email")
 	event.Subscribers = append(event.Subscribers, userEmail)
-	service.UpdateEvent(event)
-	c.JSON(http.StatusOK, gin.H{"message": "Succesfully subscribed to the event"})
+	_, err = eventService.UpdateEvent(event)
+	if err != nil {
+		utils.SendError(c, http.StatusInternalServerError, "Failed to update event")
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Successfully subscribed to the event"})
 }
 
 func GetEvents(c *gin.Context) {
-	userRole := c.GetHeader("role")
+	userRole := c.GetHeader("role") // Simulación
 	titleFilter := c.Query("title")
 	statusFilter := c.Query("status")
 	dateFilter := c.Query("date")
 
-	events := service.GetAllEvents()
+	events := eventService.GetAllEvents()
 	var filteredEvents []model.Event
 	for _, event := range events {
 		if event.Status == model.Draft && userRole != "admin" {
@@ -65,12 +74,12 @@ func GetEvents(c *gin.Context) {
 }
 
 func GetActiveEvents(c *gin.Context) {
-	events := service.GetActiveEvents()
+	events := eventService.GetActiveEvents()
 	c.JSON(http.StatusOK, events)
 }
 
 func GetCompletedEvents(c *gin.Context) {
-	events := service.GetCompletedEvents()
+	events := eventService.GetCompletedEvents()
 	c.JSON(http.StatusOK, events)
 }
 
@@ -83,18 +92,20 @@ func CreateEvent(c *gin.Context) {
 
 	if newEvent.Title == "" {
 		utils.SendError(c, http.StatusBadRequest, "Title is required")
+		return
 	}
 
-	err := service.CreateEvent(newEvent)
+	err := eventService.CreateEvent(newEvent)
 	if err != nil {
 		utils.SendError(c, http.StatusInternalServerError, "Failed to create event")
+		return
 	}
 
 	c.JSON(http.StatusCreated, newEvent)
 }
 
 func UpdateEvent(c *gin.Context) {
-	userRole := c.GetHeader("role")
+	userRole := c.GetHeader("role") // Simulación
 	if userRole != "admin" {
 		utils.SendError(c, http.StatusForbidden, "Only admins can update events")
 		return
@@ -118,7 +129,7 @@ func UpdateEvent(c *gin.Context) {
 	}
 
 	updatedEvent.ID = eventID
-	updatedEvent, err = service.UpdateEvent(updatedEvent)
+	updatedEvent, err = eventService.UpdateEvent(updatedEvent)
 	if err != nil {
 		utils.SendError(c, http.StatusNotFound, "Event not found")
 		return
@@ -127,8 +138,8 @@ func UpdateEvent(c *gin.Context) {
 	c.JSON(http.StatusOK, updatedEvent)
 }
 
-func DeteleEvent(c *gin.Context) {
-	userRole := c.GetHeader("role")
+func DeleteEvent(c *gin.Context) {
+	userRole := c.GetHeader("role") // Simulación
 	if userRole != "admin" {
 		utils.SendError(c, http.StatusForbidden, "Only admins can delete events")
 		return
@@ -140,11 +151,11 @@ func DeteleEvent(c *gin.Context) {
 		return
 	}
 
-	err = service.DeleteEvent(eventID)
+	err = eventService.DeleteEvent(eventID)
 	if err != nil {
 		utils.SendError(c, http.StatusNotFound, "Event not found")
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Event deleted succesfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "Event deleted successfully"})
 }

@@ -1,18 +1,23 @@
 package service
 
 import (
-	"errors"
 	"time"
 
 	"github.com/GonzaloC17/event-management-api/internal/model"
+	"github.com/GonzaloC17/event-management-api/internal/repository"
 )
 
-var events []model.Event
-var idCounter = 1
+type EventService struct {
+	repo repository.EventRepository
+}
 
-func GetActiveEvents() []model.Event {
+func NewEventService(repo repository.EventRepository) *EventService {
+	return &EventService{repo: repo}
+}
+
+func (s *EventService) GetActiveEvents() []model.Event {
 	var activeEvents []model.Event
-	for _, event := range events {
+	for _, event := range s.repo.GetAll() {
 		if event.Status == model.Published && event.DateTime.After(time.Now()) {
 			activeEvents = append(activeEvents, event)
 		}
@@ -20,9 +25,9 @@ func GetActiveEvents() []model.Event {
 	return activeEvents
 }
 
-func GetCompletedEvents() []model.Event {
+func (s *EventService) GetCompletedEvents() []model.Event {
 	var completedEvents []model.Event
-	for _, event := range events {
+	for _, event := range s.repo.GetAll() {
 		if event.Status == model.Published && event.DateTime.Before(time.Now()) {
 			completedEvents = append(completedEvents, event)
 		}
@@ -30,48 +35,22 @@ func GetCompletedEvents() []model.Event {
 	return completedEvents
 }
 
-func GetAllEvents() []model.Event {
-	return events
+func (s *EventService) GetAllEvents() []model.Event {
+	return s.repo.GetAll()
 }
 
-func CreateEvent(event model.Event) error {
-	if event.Title == "" {
-		return errors.New("title cannot be empty")
-	}
-	if event.DateTime.Before(time.Now()) {
-		return errors.New("event date must be in the future")
-	}
-	event.ID = idCounter
-	idCounter++
-	events = append(events, event)
-	return nil
+func (s *EventService) CreateEvent(event model.Event) error {
+	return s.repo.Create(event)
 }
 
-func GetEventByID(id int) (model.Event, error) {
-	for _, event := range events {
-		if event.ID == id {
-			return event, nil
-		}
-	}
-	return model.Event{}, errors.New("event not found")
+func (s *EventService) GetEventByID(id int) (model.Event, error) {
+	return s.repo.GetByID(id)
 }
 
-func UpdateEvent(updatedEvent model.Event) (model.Event, error) {
-	for i, event := range events {
-		if event.ID == updatedEvent.ID {
-			events[i] = updatedEvent
-			return updatedEvent, nil
-		}
-	}
-	return model.Event{}, errors.New("event not found")
+func (s *EventService) UpdateEvent(updatedEvent model.Event) (model.Event, error) {
+	return s.repo.Update(updatedEvent)
 }
 
-func DeleteEvent(id int) error {
-	for i, event := range events {
-		if event.ID == id {
-			events = append(events[:i], events[i+1:]...)
-			return nil
-		}
-	}
-	return errors.New("event not found")
+func (s *EventService) DeleteEvent(id int) error {
+	return s.repo.Delete(id)
 }
