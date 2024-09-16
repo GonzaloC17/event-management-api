@@ -4,11 +4,11 @@ import (
 	"errors"
 	"time"
 
-	"github.com/GonzaloC17/event-management-api/internal/model"
+	"github.com/GonzaloC17/event-management-api/internal/domain"
 )
 
 type InMemoryEventRepository struct {
-	events    []model.Event
+	events    []domain.Event
 	idCounter int
 }
 
@@ -16,7 +16,7 @@ func NewInMemoryEventRepository() *InMemoryEventRepository {
 	return &InMemoryEventRepository{}
 }
 
-func (r *InMemoryEventRepository) Create(event model.Event) error {
+func (r *InMemoryEventRepository) Create(event domain.Event) error {
 	if event.Title == "" {
 		return errors.New("title cannot be empty")
 	}
@@ -29,23 +29,23 @@ func (r *InMemoryEventRepository) Create(event model.Event) error {
 	return nil
 }
 
-func (r *InMemoryEventRepository) GetByID(id int) (model.Event, error) {
+func (r *InMemoryEventRepository) GetByID(id int) (domain.Event, error) {
 	for _, event := range r.events {
 		if event.ID == id {
 			return event, nil
 		}
 	}
-	return model.Event{}, errors.New("event not found")
+	return domain.Event{}, errors.New("event not found")
 }
 
-func (r *InMemoryEventRepository) Update(updatedEvent model.Event) (model.Event, error) {
+func (r *InMemoryEventRepository) Update(updatedEvent domain.Event) (domain.Event, error) {
 	for i, event := range r.events {
 		if event.ID == updatedEvent.ID {
 			r.events[i] = updatedEvent
 			return updatedEvent, nil
 		}
 	}
-	return model.Event{}, errors.New("event not found")
+	return domain.Event{}, errors.New("event not found")
 }
 
 func (r *InMemoryEventRepository) Delete(id int) error {
@@ -58,6 +58,6 @@ func (r *InMemoryEventRepository) Delete(id int) error {
 	return errors.New("event not found")
 }
 
-func (r *InMemoryEventRepository) GetAll() []model.Event {
+func (r *InMemoryEventRepository) GetAll() []domain.Event {
 	return r.events
 }

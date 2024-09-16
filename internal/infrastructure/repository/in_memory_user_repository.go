@@ -3,18 +3,18 @@ package repository
 import (
 	"errors"
 
-	"github.com/GonzaloC17/event-management-api/internal/model"
+	"github.com/GonzaloC17/event-management-api/internal/domain"
 )
 
 type InMemoryUserRepository struct {
-	users map[int]model.User
+	users map[int]domain.User
 }
 
 func NewInMemoryUserRepository() *InMemoryUserRepository {
-	return &InMemoryUserRepository{users: make(map[int]model.User)}
+	return &InMemoryUserRepository{users: make(map[int]domain.User)}
 }
 
-func (r *InMemoryUserRepository) Create(user model.User) error {
+func (r *InMemoryUserRepository) Create(user domain.User) error {
 	if _, exists := r.users[user.ID]; exists {
 		return errors.New("user already exists")
 	}
@@ -22,16 +22,16 @@ func (r *InMemoryUserRepository) Create(user model.User) error {
 	return nil
 }
 
-func (r *InMemoryUserRepository) GetByID(userID int) (model.User, error) {
+func (r *InMemoryUserRepository) GetByID(userID int) (domain.User, error) {
 	user, exists := r.users[userID]
 	if !exists {
-		return model.User{}, errors.New("user not found")
+		return domain.User{}, errors.New("user not found")
 	}
 	return user, nil
 }
 
-func (r *InMemoryUserRepository) GetAll() []model.User {
-	var userList []model.User
+func (r *InMemoryUserRepository) GetAll() []domain.User {
+	var userList []domain.User
 	for _, user := range r.users {
 		userList = append(userList, user)
 	}

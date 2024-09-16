@@ -4,14 +4,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/GonzaloC17/event-management-api/internal/model"
+	"github.com/GonzaloC17/event-management-api/internal/domain"
 )
 
 func ContainsIgnoreCase(str, substr string) bool {
 	return strings.Contains(strings.ToLower(str), strings.ToLower(substr))
 }
 
-func MatchesStatus(eventStatus model.EventStatus, filterStatus string) bool {
+func MatchesStatus(eventStatus domain.EventStatus, filterStatus string) bool {
 	return strings.EqualFold(string(eventStatus), filterStatus)
 }
 
