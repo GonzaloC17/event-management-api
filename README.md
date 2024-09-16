@@ -8,4 +8,4 @@ Tests sin funcinar:
 - TestDeleteEvent
 - TestGetAllEvents
 - TestGetCompletedEvents
--TestGetAllEventsFiltered
+- TestGetAllEventsFiltered
