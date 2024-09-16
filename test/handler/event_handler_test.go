@@ -49,7 +49,7 @@ func TestSubscribeToEvent(t *testing.T) {
 	repo.Create(event)
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/events/1/subscribe", nil)
+	req, _ := http.NewRequest("POST", "/events/0/subscribe", nil)
 	req.Header.Set("email", "user@example.com")
 	router.ServeHTTP(w, req)
 
@@ -105,7 +105,6 @@ func TestCreateEvent(t *testing.T) {
 func TestUpdateEvent(t *testing.T) {
 	router := setupEventRouter()
 
-	// Create an event
 	event := domain.Event{
 		Title:     "Event 11",
 		ShortDesc: "Short description",

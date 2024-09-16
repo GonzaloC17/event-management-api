@@ -16,7 +16,7 @@ func TestCreateEvent(t *testing.T) {
 		Title:     "Event 1",
 		ShortDesc: "Short description",
 		LongDesc:  "Long description",
-		DateTime:  time.Now().Add(time.Hour), // Future date
+		DateTime:  time.Now().Add(time.Hour),
 		Organizer: "Organizer",
 		Location:  "Location",
 		Status:    domain.Published,
