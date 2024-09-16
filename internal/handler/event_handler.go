@@ -83,6 +83,17 @@ func GetCompletedEvents(c *gin.Context) {
 	c.JSON(http.StatusOK, events)
 }
 
+func GetSubscribedEvents(c *gin.Context) {
+	userEmail := c.GetHeader("email")
+	if userEmail == "" {
+		utils.SendError(c, http.StatusBadRequest, "User email is required")
+		return
+	}
+
+	events := eventService.GetSubscribedEvents(userEmail)
+	c.JSON(http.StatusOK, events)
+}
+
 func CreateEvent(c *gin.Context) {
 	var newEvent model.Event
 	if err := c.ShouldBindJSON(&newEvent); err != nil {

@@ -20,6 +20,8 @@ func main() {
 
 		eventRoutes.GET("/completed", handler.GetCompletedEvents)
 
+		eventRoutes.GET("/subscribed", handler.GetSubscribedEvents)
+
 		eventRoutes.PUT("/:eventID", handler.UpdateEvent)
 
 		eventRoutes.DELETE("/:eventID", handler.DeleteEvent)

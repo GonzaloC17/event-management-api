@@ -35,6 +35,19 @@ func (s *EventService) GetCompletedEvents() []model.Event {
 	return completedEvents
 }
 
+func (s *EventService) GetSubscribedEvents(userEmail string) []model.Event {
+	var subscribedEvents []model.Event
+	for _, event := range s.repo.GetAll() {
+		for _, subscriber := range event.Subscribers {
+			if subscriber == userEmail {
+				subscribedEvents = append(subscribedEvents, event)
+				break
+			}
+		}
+	}
+	return subscribedEvents
+}
+
 func (s *EventService) GetAllEvents() []model.Event {
 	return s.repo.GetAll()
 }
