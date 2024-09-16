@@ -14,7 +14,6 @@ type UserHandler struct {
 	userService *usecase.UserService
 }
 
-// Constructor para UserHandler
 func NewUserHandler(userService *usecase.UserService) *UserHandler {
 	return &UserHandler{userService: userService}
 }
