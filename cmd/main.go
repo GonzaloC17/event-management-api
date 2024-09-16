@@ -14,15 +14,15 @@ func main() {
 
 		eventRoutes.POST("/", handler.CreateEvent)
 
-		eventRoutes.POST("/:id/subscribe", handler.SubscribeToEvent)
+		eventRoutes.POST("/:eventID/subscribe", handler.SubscribeToEvent)
 
 		eventRoutes.GET("/active", handler.GetActiveEvents)
 
 		eventRoutes.GET("/completed", handler.GetCompletedEvents)
 
-		eventRoutes.PUT("/:id", handler.UpdateEvent)
+		eventRoutes.PUT("/:eventID", handler.UpdateEvent)
 
-		eventRoutes.DELETE("/:id", handler.DeteleEvent)
+		eventRoutes.DELETE("/:eventID", handler.DeteleEvent)
 	}
 
 	userRoutes := r.Group("/users")
@@ -31,7 +31,7 @@ func main() {
 
 		userRoutes.GET("/", handler.GetAllUsers)
 
-		userRoutes.GET("/:id", handler.GetUserByID)
+		userRoutes.GET("/:userID", handler.GetUserByID)
 	}
 	r.Run(":8080")
 }

@@ -12,7 +12,7 @@ import (
 )
 
 func SubscribeToEvent(c *gin.Context) {
-	eventID, err := strconv.Atoi(c.Param("id"))
+	eventID, err := strconv.Atoi(c.Param("eventID"))
 	if err != nil {
 		utils.SendError(c, http.StatusBadRequest, "Invalid event ID")
 		return
@@ -28,7 +28,6 @@ func SubscribeToEvent(c *gin.Context) {
 		return
 	}
 
-	//simulacion
 	userEmail := c.GetHeader("email")
 	event.Subscribers = append(event.Subscribers, userEmail)
 	service.UpdateEvent(event)
@@ -36,7 +35,7 @@ func SubscribeToEvent(c *gin.Context) {
 }
 
 func GetEvents(c *gin.Context) {
-	userRole := c.GetHeader("role") //simulacion
+	userRole := c.GetHeader("role")
 	titleFilter := c.Query("title")
 	statusFilter := c.Query("status")
 	dateFilter := c.Query("date")
@@ -95,13 +94,13 @@ func CreateEvent(c *gin.Context) {
 }
 
 func UpdateEvent(c *gin.Context) {
-	userRole := c.GetHeader("role") //simulacion
+	userRole := c.GetHeader("role")
 	if userRole != "admin" {
 		utils.SendError(c, http.StatusForbidden, "Only admins can update events")
 		return
 	}
 
-	eventID, err := strconv.Atoi(c.Param("id"))
+	eventID, err := strconv.Atoi(c.Param("eventID"))
 	if err != nil {
 		utils.SendError(c, http.StatusBadRequest, "Invalid event ID")
 		return
@@ -129,7 +128,7 @@ func UpdateEvent(c *gin.Context) {
 }
 
 func DeteleEvent(c *gin.Context) {
-	userRole := c.GetHeader("role") //simulacion
+	userRole := c.GetHeader("role")
 	if userRole != "admin" {
 		utils.SendError(c, http.StatusForbidden, "Only admins can delete events")
 		return

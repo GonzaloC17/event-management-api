@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -27,6 +28,7 @@ func CreateUser(c *gin.Context) {
 
 func GetUserByID(c *gin.Context) {
 	userID, err := strconv.Atoi(c.Param("userID"))
+	fmt.Println("Error:", err)
 	if err != nil {
 		utils.SendError(c, http.StatusBadRequest, "Invalid user ID")
 		return
