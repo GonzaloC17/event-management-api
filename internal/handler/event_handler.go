@@ -68,7 +68,7 @@ func (h *EventHandler) GetCompletedEvents(c *gin.Context) {
 }
 
 func (h *EventHandler) GetSubscribedEvents(c *gin.Context) {
-	userEmail := c.GetHeader("email")
+	userEmail := c.GetHeader("email") // Simulación de autenticación de usuario
 	if userEmail == "" {
 		utils.SendError(c, http.StatusBadRequest, "User email is required")
 		return
